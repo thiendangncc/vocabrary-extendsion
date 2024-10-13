@@ -1,8 +1,5 @@
-function ContentApp() { // start building your content view here, like any other normal react app
-  return (
-    <>
-    </>
-  )
+function ContentApp() {
+  return <></>;
 }
 
-export default ContentApp
+export default ContentApp;
