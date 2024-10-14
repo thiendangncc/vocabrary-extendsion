@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
-import ReactDOM from "react-dom/client";
+// import React from "react";
+// import ReactDOM from "react-dom/client";
 // import "../index.css"; //commented to prevent tailwind styles leaking into the webpage
 // but if you want to use tailwind in content app, import the index.css file
-import "./content.css";
-import ContentApp from "./ContentApp";
+// import "./content.css";
+// import ContentApp from "./ContentApp";
 import highlight from "./highlight";
 import { contentListener } from "./handler";
-document.addEventListener("DOMContentLoaded", function () {
-  // Run the functions to highlight keywords
-  highlight.autoMark();
-});
+import { scrollHandler } from "./scrollHandler";
+// window.addEventListener("load", function () {
+
+// Run the functions to highlight keywords
+highlight.autoMark();
 let flagRetry = 0;
 const intervalId = setInterval(async function () {
   flagRetry++;
@@ -21,12 +22,17 @@ const intervalId = setInterval(async function () {
   }
 }, 1000);
 contentListener.init();
-const root = document.createElement("div");
-root.id = "crx-root";
-document.body.appendChild(root);
 
-ReactDOM.createRoot(root).render(
-  <React.StrictMode>
-    <ContentApp />
-  </React.StrictMode>
-);
+setTimeout(() => {
+  scrollHandler.init();
+}, 300);
+// });
+// const root = document.createElement("div");
+// root.id = "crx-root";
+// document.body.appendChild(root);
+
+// ReactDOM.createRoot(root).render(
+//   <React.StrictMode>
+//     <ContentApp />
+//   </React.StrictMode>
+// );

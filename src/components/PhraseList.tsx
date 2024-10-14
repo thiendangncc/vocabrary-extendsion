@@ -34,7 +34,7 @@ const PhraseList: React.FC<PhraseListProps> = () => {
   );
 
   return (
-    <div className="p-4 max-w-lg mx-auto bg-white rounded-lg shadow-md">
+    <div className="p-4 mx-auto bg-white rounded-lg shadow-md">
       {/* Search Input */}
       <input
         type="text"

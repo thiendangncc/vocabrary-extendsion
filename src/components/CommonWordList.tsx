@@ -57,7 +57,7 @@ const CommonWordList: React.FC<CommonWordListProps> = ({ data }) => {
   };
 
   return (
-    <div className="p-4 max-w-lg mx-auto bg-white rounded-lg shadow-md">
+    <div className="p-4 mx-auto bg-white rounded-lg shadow-md">
       <InfiniteScroll
         dataLength={items.length}
         next={fetchMoreData}

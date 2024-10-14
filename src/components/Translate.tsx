@@ -45,7 +45,7 @@ const Translate: React.FC<TranslateProps> = ({ word }) => {
       {showTooltip && translation && (
         <div
           ref={tooltipRef}
-          className="absolute left-0 bg-white text-black p-2 rounded shadow-lg z-10"
+          className="absolute left-0 bg-white text-black p-2 rounded shadow-lg z-10 text-base leading-[1.2] font-normal"
           style={{ minWidth: "100px" }}
         >
           {translation}

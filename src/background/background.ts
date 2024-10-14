@@ -172,12 +172,15 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       VocabularyModel.deleteVocabularyByKeyword(
         auth.currentUser?.uid,
         message.data
-      );
+      ).then(sendResponse);
     }
   }
   if (message.action === "update_vocabulary_count") {
     if (auth.currentUser?.uid) {
-      VocabularyModel.updateWordsCount(auth.currentUser?.uid, message.data);
+      VocabularyModel.updateWordsCount(
+        auth.currentUser?.uid,
+        message.data
+      ).then(sendResponse);
     }
   }
   return true;
