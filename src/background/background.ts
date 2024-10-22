@@ -155,6 +155,9 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       signInWithEmailAndPassword(auth, message.email, message.password);
     });
   }
+  if (message.action === "refresh_token") {
+    auth.currentUser?.getIdToken(true);
+  }
   if (message.action === "logout") {
     auth.signOut();
   }

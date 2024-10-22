@@ -63,7 +63,6 @@ const router = createMemoryRouter([
 
 const App = () => {
   const isWeb = import.meta.env.VITE_MODE === "development";
-  console.log({ isWeb });
   return (
     <div className={`app-container bg-white ${isWeb ? "web-container" : ""}`}>
       <RouterProvider router={router} />

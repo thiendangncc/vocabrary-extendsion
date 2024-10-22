@@ -13,8 +13,6 @@ const TextToSpeech: React.FC<TextToSpeechProps> = ({ text }) => {
 
     try {
       const audioData = await textToSpeech(text); // Get the first element from the array
-      console.log("audioData", audioData);
-
       const audioSrc = `data:audio/mp3;base64,${audioData}`; // Construct audio source
 
       const audio = new Audio(audioSrc);

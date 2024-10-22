@@ -15,6 +15,13 @@ const AppProvider = () => {
   };
   useEffect(() => {
     if (loading) return;
+    // auth.currentUser?.getIdToken(true).then((token) => {
+    //   console.log("tokennnnn", token);
+    //   if (token) {
+    //     chrome.runtime.sendMessage({ action: "refresh_token" });
+    //   }
+    // });
+    console.log("auth.currentUser", auth.currentUser);
 
     if (!user) {
       navigate("/login");

@@ -16,11 +16,11 @@ let flagRetry = 0;
 const intervalId = setInterval(async function () {
   flagRetry++;
   const el = document.querySelector(".highlighted-keyword");
-  if (!el) await highlight.autoMark(); // retry
-  if (flagRetry === 10) {
+  if (!el) highlight.autoMark(); // retry
+  if (flagRetry === 1) {
     clearInterval(intervalId);
   }
-}, 1000);
+}, 3000);
 contentListener.init();
 
 setTimeout(() => {

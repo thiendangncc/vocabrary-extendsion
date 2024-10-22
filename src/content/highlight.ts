@@ -1,5 +1,6 @@
 import Mark from "mark.js";
 import { IPageWordCount } from "../utils/type";
+// import { uuidv4 } from "../utils/helper";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 // Function to clear the current text selection
@@ -18,52 +19,126 @@ function closeTooltipOnClickOutside(tooltip: any, event: any) {
 }
 // Function to recursively walk through the text nodes of the document
 class Highlight {
+  markElements: { [key: string]: HTMLElement } = {};
+  wordsCount: Record<string, IPageWordCount> = {};
   private get instance() {
-    const context = document.body;
+    const context = document.querySelectorAll("div");
     return new Mark(context);
   }
   constructor() {}
+  private markKeywords(keywords: string[], data: any[]) {
+    let index = 0; // Initialize index
+    const markNext = () => {
+      if (index < keywords.length) {
+        // Mark the current keyword
+        this.instance.markRegExp(new RegExp(`${keywords[index]}`, "gi"), {
+          element: "span",
+          className: "highlighted-keyword",
+          each: (element: HTMLElement) => {
+            // hidden element
+            if (element.offsetParent === null) return;
+            setTimeout(() => {
+              const item = (data || []).find(
+                (f) =>
+                  f.keyword.toLowerCase() ===
+                  element.innerText.toLowerCase().trim()
+              );
+              // element.setAttribute("data-uuid", uuidv4());
+              element.setAttribute("data-text", item.keyword);
+              element.setAttribute("data-notes", item.notes);
+              this.addKeywordClickListener(element);
+              // keyword count
+              const wordCount = this.wordsCount[item.keyword];
+              if (!wordCount) {
+                this.wordsCount[item.keyword] = {
+                  url: window.location.href,
+                  count: 0,
+                  countAt: new Date().getTime(),
+                  word: item.keyword,
+                };
+              }
+              ++this.wordsCount[item.keyword].count;
+            }, 0);
+          },
+          filter: (
+            textNode: Text,
+            term: string,
+            marksSoFar: number,
+            marksTotal: number
+          ) => {
+            console.log("markNext", {
+              textNode,
+              term,
+              marksSoFar,
+              marksTotal,
+            });
+            return true;
+          },
+          done: function () {
+            index++; // Move to the next keyword
+            // Request the next animation frame
+            requestAnimationFrame(markNext);
+          },
+        });
+      }
+    };
+
+    // Start marking from the first keyword
+    requestAnimationFrame(markNext);
+  }
   // Function to highlight the keywords in text nodes
   public mark(data: any[]) {
     const keywords = (data || [])
       .map((m: any) => m.keyword)
       .filter((k) => k != "");
     if (!data || !data.length || !keywords.length) return;
+
     // Highlight the keywords
     this.addHighlightStyles();
-    const wordsCount: Record<string, IPageWordCount> = {};
-    this.instance.mark(keywords, {
-      element: "span",
-      className: "highlighted-keyword",
-      separateWordSearch: false,
-      acrossElements: true,
-      each: (element: HTMLElement) => {
-        // hidden element
-        if (element.offsetParent === null) return;
-        const item = (data || []).find(
-          (f) =>
-            f.keyword.toLowerCase() === element.innerText.toLowerCase().trim()
-        );
-        element.setAttribute("data-text", item.keyword);
-        element.setAttribute("data-notes", item.notes);
-        // keyword count
-        const wordCount = wordsCount[item.keyword];
-        if (!wordCount) {
-          wordsCount[item.keyword] = {
-            url: window.location.href,
-            count: 0,
-            countAt: new Date().getTime(),
-            word: item.keyword,
-          };
-        }
-        ++wordsCount[item.keyword].count;
-      },
-    });
+    this.markKeywords(keywords, data);
+    // for (const keyword of keywords) {
+    //   setTimeout(() => {
+    //     // next tick
+    //     this.instance.markRegExp(new RegExp(`${keyword}`, "gi"), {
+    //       element: "span",
+    //       className: "highlighted-keyword",
+    //       // separateWordSearch: false,
+    //       // diacritics: false,
+    //       // acrossElements: false,
+    //       // debug: true,
+    //       each: (element: HTMLElement) => {
+    //         // hidden element
+    //         if (element.offsetParent === null) return;
+    //         console.log("element", element, element.dataset);
+    //         const item = (data || []).find(
+    //           (f) =>
+    //             f.keyword.toLowerCase() ===
+    //             element.innerText.toLowerCase().trim()
+    //         );
+    //         // element.setAttribute("data-uuid", uuidv4());
+    //         element.setAttribute("data-text", item.keyword);
+    //         element.setAttribute("data-notes", item.notes);
+    //         this.addKeywordClickListener(element);
+    //         // keyword count
+    //         const wordCount = wordsCount[item.keyword];
+    //         if (!wordCount) {
+    //           wordsCount[item.keyword] = {
+    //             url: window.location.href,
+    //             count: 0,
+    //             countAt: new Date().getTime(),
+    //             word: item.keyword,
+    //           };
+    //         }
+    //         ++wordsCount[item.keyword].count;
+    //       },
+    //     });
+    //   }, 100);
+    // }
 
     // clearTextSelection();
-    this.addKeywordClickListeners();
+    // this.addKeywordClickListeners();
 
-    return wordsCount;
+    return this.wordsCount;
   }
   public unmark(keyword: string) {
     this.instance.unmark({
@@ -117,6 +192,7 @@ class Highlight {
       action: "get_vocabulary",
     });
     const wordsCount = this.mark(response);
+    console.log("autoMark", wordsCount);
 
     await chrome.runtime.sendMessage({
       action: "update_vocabulary_count",
@@ -182,6 +258,51 @@ class Highlight {
           .addEventListener("click", () => {
             tooltip.remove(); // Remove the tooltip after deletion
           });
+      });
+    });
+  }
+  private addKeywordClickListener(element: HTMLElement) {
+    element.addEventListener("click", (event: any) => {
+      const element = event.target;
+      const keyword = element.textContent;
+      // Remove any existing tooltips
+      this.removeExistingTooltips();
+
+      // Create tooltip
+      const tooltip: any = document.createElement("div");
+      tooltip.classList.add("tooltip-keyword");
+      tooltip.innerHTML = `
+            <p>${element.dataset.text}: ${element.dataset.notes}</p>
+            <button class="delete-keyword">Delete Keyword</button>
+            <button class="close-keyword">Close</button>
+        `;
+
+      // Add tooltip to the DOM
+      document.body.appendChild(tooltip);
+      setTimeout(() => {
+        document.addEventListener(
+          "click",
+          closeTooltipOnClickOutside.bind(null, tooltip, event.target),
+          { once: true }
+        );
+      }, 0); // next tick render
+      // Position the tooltip near the clicked element
+      const rect = element.getBoundingClientRect();
+      tooltip.style.left = `${rect.left + window.scrollX}px`;
+      tooltip.style.top = `${rect.top + rect.height + window.scrollY}px`;
+
+      // Add event listener to delete the keyword when delete button is clicked
+      tooltip.querySelector(".delete-keyword").addEventListener("click", () => {
+        // event.target.replaceWith(event.target.textContent); // Remove the span but keep the text
+        tooltip.remove(); // Remove the tooltip after deletion
+        this.unmark(keyword);
+        chrome.runtime.sendMessage({
+          action: "remove_vocabulary",
+          data: keyword,
+        });
+      });
+      tooltip.querySelector(".close-keyword").addEventListener("click", () => {
+        tooltip.remove(); // Remove the tooltip after deletion
       });
     });
   }
