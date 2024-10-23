@@ -45,6 +45,9 @@ class Highlight {
                   f.keyword.toLowerCase() ===
                   element.innerText.toLowerCase().trim()
               );
+              if (!item) {
+                return;
+              }
               // element.setAttribute("data-uuid", uuidv4());
               element.setAttribute("data-text", item.keyword);
               element.setAttribute("data-notes", item.notes);
@@ -193,11 +196,13 @@ class Highlight {
     const response = await ChromeRuntime.sendMessage({
       action: "get_vocabulary",
     });
-    const wordsCount = this.mark(response);
-    await ChromeRuntime.sendMessage({
-      action: "update_vocabulary_count",
-      data: wordsCount,
-    });
+    this.mark(response);
+    setTimeout(() => {
+      ChromeRuntime.sendMessage({
+        action: "update_vocabulary_count",
+        data: this.wordsCount,
+      });
+    }, 2000);
   }
   // Function to remove any existing tooltips
   public removeExistingTooltips() {
