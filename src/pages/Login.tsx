@@ -6,6 +6,7 @@ import {
 
 import { auth } from "../utils/firebase";
 import { Link, useNavigate } from "react-router-dom";
+import { ChromeRuntime } from "../utils/chrome";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -19,7 +20,7 @@ const LoginPage = () => {
     e.preventDefault();
     // Handle email/password login logic here
     signInWithEmailAndPassword(auth, email, password).then((u) => setUser(u));
-    chrome.runtime.sendMessage({ action: "login", email, password });
+    ChromeRuntime.sendMessage({ action: "login", email, password });
   };
 
   const handleGoogleSignIn = async () => {

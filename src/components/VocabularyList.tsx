@@ -1,41 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
-import VocabularyModel from "../database/VocabularyModel";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "../utils/firebase";
 import TextToSpeech from "./TextToSpeech";
+interface VocabularyListProps {
+  vocabularies: any[];
+  onDelete: (keyword: string) => void;
+}
 
-const VocabularyList = () => {
-  // Example vocabulary data
-  const [vocabularies, setVocabularies] = useState([
-    // { id: 1, keyword: "React", note: "A JavaScript library for building UIs" },
-    // { id: 2, keyword: "Tailwind", note: "A utility-first CSS framework" },
-    // {
-    //   id: 3,
-    //   keyword: "JavaScript",
-    //   note: "A high-level, dynamic programming language",
-    // },
-  ]);
-  const [user] = useAuthState(auth);
-
-  useEffect(() => {
-    if (!user?.uid) return;
-    VocabularyModel.getFeed(user?.uid).then((data: any) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setVocabularies(Object.values(data) || []);
-    });
-  }, [user]);
-
-  // Function to handle deleting a vocabulary
-  const handleDelete = (keyword: string) => {
-    if (!user?.uid) return;
-    VocabularyModel.deleteVocabularyByKeyword(user?.uid, keyword).then(() => {
-      VocabularyModel.getFeed(user?.uid).then((data: any) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setVocabularies(Object.values(data) || []);
-      });
-    });
-  };
+const VocabularyList: React.FC<VocabularyListProps> = ({
+  vocabularies,
+  onDelete,
+}) => {
   const getLink = (vocab: any) => {
     const url = new URL(vocab.url);
     url.searchParams.set("v_position", JSON.stringify(vocab.position));
@@ -85,7 +58,7 @@ const VocabularyList = () => {
                 </a>
                 <button
                   className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                  onClick={() => handleDelete(vocab.keyword)}
+                  onClick={() => onDelete(vocab.keyword)}
                 >
                   <svg
                     className="h-6 w-6"

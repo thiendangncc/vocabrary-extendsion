@@ -7,6 +7,8 @@ import { auth } from "../utils/firebase";
 import VocabularyModel from "../database/VocabularyModel";
 import { translateVn } from "../utils/translate";
 import { ExtensionPersistence } from "./storage";
+import { ProxyFactory } from "../database/ProxyFactory";
+import MyVocabularyModel from "../database/MyVocabularyModel";
 
 chrome.runtime.onInstalled.addListener(() => {
   // Create a new context menu item
@@ -155,9 +157,9 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       signInWithEmailAndPassword(auth, message.email, message.password);
     });
   }
-  if (message.action === "refresh_token") {
-    auth.currentUser?.getIdToken(true);
-  }
+  // if (message.action === "refresh_token") {
+  //   auth.currentUser?.getIdToken(true);
+  // }
   if (message.action === "logout") {
     auth.signOut();
   }
@@ -187,4 +189,9 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     }
   }
   return true;
+});
+
+ProxyFactory.setUpHandler({
+  VocabularyModel,
+  MyVocabularyModel,
 });

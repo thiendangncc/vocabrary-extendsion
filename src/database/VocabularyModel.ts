@@ -1,6 +1,7 @@
 // VocabularyModel.ts
 import { IPageWordCount } from "../utils/type";
 import BaseModel from "./BaseModel";
+import { ProxyFactory } from "./ProxyFactory";
 
 export interface VocabularyData {
   keyword: string;
@@ -76,6 +77,7 @@ class VocabularyModel extends BaseModel<{ [key: string]: VocabularyData }> {
   }
   async getFeed(uid: string) {
     const data = await this.read(uid);
+
     if (!data) return null;
     // Convert the object into an array of entries and sort
     const sortedData = Object.entries(data).sort(([, vocabA], [, vocabB]) => {
@@ -104,4 +106,5 @@ class VocabularyModel extends BaseModel<{ [key: string]: VocabularyData }> {
   }
 }
 
-export default new VocabularyModel();
+// export default new VocabularyModel();
+export default ProxyFactory.get(VocabularyModel, "VocabularyModel");

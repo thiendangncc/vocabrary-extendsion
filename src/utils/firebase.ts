@@ -23,17 +23,17 @@ const firebaseConfig = {
 export const firebaseApp = initializeApp(firebaseConfig);
 // export const firebaseAnalytics = getAnalytics(firebaseApp);
 export const auth = getAuth();
-auth.onAuthStateChanged((user) => {
-  if (user) {
-    console.log("User is signed in:", user);
-    // You can now access the user's ID token
-    user.getIdToken(true).then((idToken) => {
-      console.log("ID Token:", idToken);
-    });
-  } else {
-    console.log("No user is signed in.");
-  }
-});
+// auth.onAuthStateChanged((user) => {
+//   if (user) {
+//     console.log("User is signed in:", user);
+//     // You can now access the user's ID token
+//     user.getIdToken(true).then((idToken) => {
+//       console.log("ID Token:", idToken);
+//     });
+//   } else {
+//     console.log("No user is signed in.");
+//   }
+// });
 // auth.currentUser?.uid
 // Initialize Firebase Storage
 export const firebaseDatabase = getDatabase(firebaseApp);

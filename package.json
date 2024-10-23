@@ -4,7 +4,7 @@
   "version": "0.0.3",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "tsc && vite build",
     "build:web": "cross-env VITE_MODE=development tsc && vite build && firebase deploy",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",

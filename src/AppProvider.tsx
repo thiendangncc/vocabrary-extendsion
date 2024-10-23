@@ -3,6 +3,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate, useLocation, Outlet, Link } from "react-router-dom";
 import { auth } from "./utils/firebase";
 import LoadingSpinner from "./components/Loading";
+import { ChromeRuntime } from "./utils/chrome";
 
 const AppProvider = () => {
   const [user, loading] = useAuthState(auth);
@@ -11,7 +12,7 @@ const AppProvider = () => {
   const isActive = (path: string) => location.pathname === path;
   const handleLogout = () => {
     auth.signOut();
-    chrome.runtime.sendMessage({ action: "logout" });
+    ChromeRuntime.sendMessage({ action: "logout" });
   };
   useEffect(() => {
     if (loading) return;
@@ -21,8 +22,6 @@ const AppProvider = () => {
     //     chrome.runtime.sendMessage({ action: "refresh_token" });
     //   }
     // });
-    console.log("auth.currentUser", auth.currentUser);
-
     if (!user) {
       navigate("/login");
     }

@@ -1,5 +1,6 @@
 // VocabularyModel.ts
 import BaseModel from "./BaseModel";
+import { ProxyFactory } from "./ProxyFactory";
 
 class MyVocabularyModel extends BaseModel<string[]> {
   constructor() {
@@ -25,4 +26,4 @@ class MyVocabularyModel extends BaseModel<string[]> {
   }
 }
 
-export default new MyVocabularyModel();
+export default ProxyFactory.get(MyVocabularyModel, "MyVocabularyModel");

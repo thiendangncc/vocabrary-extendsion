@@ -7,6 +7,7 @@ import RegisterPage from "./pages/Register";
 import Settings from "./pages/Settings";
 import CommonWordPage from "./pages/CommonWordPage";
 import PhrasePage from "./pages/PhrasePage";
+import { isExtensionPopup } from "./utils/chrome";
 
 // const router = createBrowserRouter([
 //   {
@@ -62,7 +63,7 @@ const router = createMemoryRouter([
 // }
 
 const App = () => {
-  const isWeb = import.meta.env.VITE_MODE === "development";
+  const isWeb = window && !isExtensionPopup();
   return (
     <div className={`app-container bg-white ${isWeb ? "web-container" : ""}`}>
       <RouterProvider router={router} />

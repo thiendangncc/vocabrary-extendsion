@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Mark from "mark.js";
 import { IPageWordCount } from "../utils/type";
+import { ChromeRuntime } from "../utils/chrome";
 // import { uuidv4 } from "../utils/helper";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -61,17 +63,17 @@ class Highlight {
             }, 0);
           },
           filter: (
-            textNode: Text,
-            term: string,
-            marksSoFar: number,
-            marksTotal: number
+            _textNode: Text,
+            _term: string,
+            _marksSoFar: number,
+            _marksTotal: number
           ) => {
-            console.log("markNext", {
-              textNode,
-              term,
-              marksSoFar,
-              marksTotal,
-            });
+            // console.log("markNext", {
+            //   textNode,
+            //   term,
+            //   marksSoFar,
+            //   marksTotal,
+            // });
             return true;
           },
           done: function () {
@@ -188,13 +190,11 @@ class Highlight {
   }
 
   public async autoMark() {
-    const response = await chrome.runtime.sendMessage({
+    const response = await ChromeRuntime.sendMessage({
       action: "get_vocabulary",
     });
     const wordsCount = this.mark(response);
-    console.log("autoMark", wordsCount);
-
-    await chrome.runtime.sendMessage({
+    await ChromeRuntime.sendMessage({
       action: "update_vocabulary_count",
       data: wordsCount,
     });
@@ -248,7 +248,7 @@ class Highlight {
             // event.target.replaceWith(event.target.textContent); // Remove the span but keep the text
             tooltip.remove(); // Remove the tooltip after deletion
             this.unmark(keyword);
-            chrome.runtime.sendMessage({
+            ChromeRuntime.sendMessage({
               action: "remove_vocabulary",
               data: keyword,
             });
@@ -296,7 +296,7 @@ class Highlight {
         // event.target.replaceWith(event.target.textContent); // Remove the span but keep the text
         tooltip.remove(); // Remove the tooltip after deletion
         this.unmark(keyword);
-        chrome.runtime.sendMessage({
+        ChromeRuntime.sendMessage({
           action: "remove_vocabulary",
           data: keyword,
         });
